@@ -94,12 +94,22 @@
 			background-color: #ff0000;
 			float: right;
 		}
+		.next-step{
+			position: absolute;
+			right:0;
+			height: 60px;
+			line-height: 60px;
+			width:150px;
+			background-color: green;
+			text-align: center;
+			color: #fff;
+		}
 	</style>
 
 </head>
 
 <body>
-	<div class="toolbar"></div>
+	<div class="toolbar"><div class="next-step">下一步啊</div></div>
 	<canvas id="canvas"></canvas>
 	<div id="scale"></div>
 	<div id="area-set" data-id="">
@@ -1058,7 +1068,15 @@
 			can.clearRect(0, 0, SCREEN.width, SCREEN.height - TOOLBAR.height - SCREEN.topbar);
 		}
 
-		//TODO: 弹出层组件，限制输入数字
+
+		mui(".toolbar").on("tap",".next-step",function(){
+			var data = {"IN":IN,"OUT":OUT,"INIT":INIT,"scale":scale};
+			localStorage.setItem("gauge_data",JSON.stringify(data));
+			location.href = "index2.html";
+		})
+
+
+
 	</script>
 
 </body>
