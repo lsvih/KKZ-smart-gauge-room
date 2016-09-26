@@ -75,11 +75,22 @@
 		var TOOLBAR = {};
 		TOOLBAR.width = SCREEN.width;
 		TOOLBAR.height = 80;
-        var data = JSON.parse(localStorage.getItem("gauge_data"))
-		var INIT = data.INIT;
-		var OUT = data.OUT;
-		var IN = data.IN;
-		var scale = data.scale;
+        var gauge_data = JSON.parse(localStorage.getItem("gauge_data"))
+		var INIT = gauge_data.INIT;
+		var OUT = gauge_data.OUT;
+		var IN = gauge_data.IN;
+		var scale = gauge_data.scale;
+
+        var eps = 0.001 / scale;
+        function feq(x, y) {
+            return Math.abs(x - y) <= eps;
+        };
+        function flt(x, y) {
+            return x - y < -eps;
+        }
+        function fgt(x, y) {
+            return x - y > eps;
+        }
 
 		// --------Init objects----------
 		var toolbar = document.getElementsByClassName("toolbar")[0];
@@ -93,48 +104,44 @@
 
 		// --------Init TOOLBAR----------
 		var tools = [{
-			"name": "1",
+			"id": "add-components",
 			"default": {
 				"height": 50,
 				"width": 50,
-				"color": "red",
-				"position": "out"
 			},
 			"icon": "./11.png"
 		}, {
-			"name": "2",
+            "id": "anti-clockwise",
 			"default": {
 				"height": 50,
 				"width": 50,
-				"color": "green",
-				"position": "in"
 			},
-			"icon": "./11.png"
+			"icon": "./img/anti-clockwise.png"
 		}, {
-			"name": "3",
+			"id": "clockwise",
 			"default": {
 				"height": 50,
-				"width": 50,
-				"color": "blue",
-				"position": "out"
+				"width": 50
 			},
-			"icon": "./11.png"
+			"icon": "./img/clockwise.png"
 		}];
 		initToolBar(tools);
+
 		//---------Init End------------
 
-        window.onload = function() {
-            document.getElementById("scale").innerText = (scale * 100).toFixed(2) + '米';
-            var segments = reshapeBlocks(INIT, IN, OUT, scale);
-            console.log("segments:");
-            console.log(segments);
-            setColor("#000");
-            for(var i = 0; i < segments.length; i ++) {
-                can.moveTo(segments[i].x1, segments[i].y1);
-                can.lineTo(segments[i].x2, segments[i].y2);
-                can.stroke();
-            }
-        };
+        document.getElementById("scale").innerText = (scale * 100).toFixed(2) + '米';
+        var segments = reshapeBlocks(INIT, IN, OUT, scale);
+        var segmentId = -1;
+        console.log("segments:");
+        console.log(segments);
+        setColor("#000");
+        redraw();
+        canvas.addEventListener("tap", function(e) {
+            var x = e.detail.changedTouches[0].pageX;
+            var y = e.detail.changedTouches[0].pageY - SCREEN.topbar - TOOLBAR.height;
+            segmentId = findTappedSegment(x, y, segments);
+            redraw();
+        });
 
 
 		//-------Functions------------
@@ -146,47 +153,45 @@
 		function initToolBar(tools) {
 			for (var i = 0; i < tools.length; i++) {
 				var tool = document.createElement("span");
+                tool.id = tools[i].id;
 				tool.className = "tool";
 				tool.setAttribute("name", tools[i].name);
-				tool.innerHTML = '<img src="' + tools[i].icon + '"/>';
-				if (tools[i].default.position == "out") {
-					tool.addEventListener("tap", function() {
-						Drag(document.getElementById(this.getAttribute("name")), putBlockOut)
-					})
-				} else {
-					tool.addEventListener("tap", function() {
-						Drag(document.getElementById(this.getAttribute("name")), putBlockIn)
-					})
-				}
-
-				console.log("Tools loading...")
+				tool.innerHTML = '<img src="' + tools[i].icon + '" style="with:' + tools[i].default.width + 'px; height:' + tools[i].default.height + 'px"/>';
 				toolbar.appendChild(tool);
-				var block = document.createElement("div");
-				if (tools[i].default.position == "out") {
-					block.setAttribute("style", "height:" + tools[i].default.height + "px;width:" + tools[i].default.width + "px;border:2px solid " + tools[i].default.color + ";");
-				} else {
-					block.setAttribute("style", "height:" + tools[i].default.height + "px;width:" + tools[i].default.width + "px;background-color: " + tools[i].default.color + ";");
-				}
-				block.setAttribute("data-type", tools[i].default.position);
-				block.className = "block";
-				block.setAttribute("id", tools[i].name);
-				document.body.appendChild(block);
 			}
+            document.getElementById("add-components").addEventListener("tap", function(e) {
+                alert("下面没有了");
+            });
+            document.getElementById("anti-clockwise").addEventListener("tap", function(e) {
+                segmentId -= 1;
+                if(segmentId < 0) {
+                    segmentId = segments.length - 1;
+                }
+                redraw();
+            });
+            document.getElementById("clockwise").addEventListener("tap", function(e) {
+                segmentId += 1;
+                if(segmentId >= segments.length) {
+                    segmentId = 0;
+                }
+                redraw();
+            });
 		}
 
 		/**
 		 * 重绘画布
-		 * @param {Function} callback 重绘完成的成功回调
 		 */
-		function reDraw(callback) {
+		function redraw() {
 			clearCanvas();
-			can.strokeRect(INIT.x1, INIT.y1, INIT.x2 - INIT.x1, INIT.y2 - INIT.y1);
-			for (var a = 0; a < IN.length; a++) {
-				can.fillRect(IN[a].x1, IN[a].y1, IN[a].x2 - IN[a].x1, IN[a].y2 - IN[a].y1);
-			}
-			for (var b = 0; b < OUT.length; b++) {
-				can.strokeRect(OUT[b].x1, OUT[b].y1, OUT[b].x2 - OUT[b].x1, OUT[b].y2 - OUT[b].y1);
-			}
+            can.beginPath();
+            for(var i = 0; i < segments.length; i ++) {
+                can.moveTo(segments[i].x1, segments[i].y1);
+                can.lineTo(segments[i].x2, segments[i].y2);
+            }
+            can.stroke();
+            if(segmentId >= 0) {
+                highlightSegment(segmentId);
+            }
 		}
 
 		/**
@@ -213,35 +218,12 @@
 			can.clearRect(0, 0, SCREEN.width, SCREEN.height - TOOLBAR.height - SCREEN.topbar);
 		}
 
+
         /**
          * 将块块变成多边形户型图
          * @return {Array}     返回点列表
          */
         function reshapeBlocks(initBlock, inBlocks, outBlocks, scale) {
-            var eps = 0.001 / scale;
-            function feq(x, y) {
-                return Math.abs(x - y) <= eps;
-            };
-            function flt(x, y) {
-                return x - y < -eps;
-            }
-            function fgt(x, y) {
-                return x - y > eps;
-            }
-            // function isOnInitBlock(p) {
-            //     var x = p.x, y = p.y;
-            //     if(feq(x, initBlock.x1) || feq(x, initBlock.x2)) {
-            //         if(!flt(y, initBlock.y1) && !fgt(y, initBlock.y2)) {
-            //             return true;
-            //         }
-            //     }
-            //     if(feq(y, initBlock.y1) || feq(y, initBlock.y2)) {
-            //         if(!flt(x, initBlock.x1) && !fgt(y, initBlock.x2)) {
-            //             return true;
-            //         }
-            //     }
-            //     return false;
-            // }
             function isInInitBlock(p) {
                 var x = p.x, y = p.y;
                 return !flt(x, initBlock.x1) && !fgt(x, initBlock.x2) && !flt(y, initBlock.y1) && !fgt(y, initBlock.y2);
@@ -334,7 +316,7 @@
                     var res = [];
                     var sid = points.id(sp);
                     res.push(points.p[sid]);
-                    can.moveTo(res[0].x, res[0].y);
+                    // can.moveTo(res[0].x, res[0].y);
                     var pd = sd; // 上一次的方向
                     var cid = sid; // 当前节点id
                     var vis = Array(points.p.length);
@@ -497,6 +479,56 @@
                 addBlock(outBlocks[i], true);
             }
             return mergeToSegments(graph.walk(pickStartPoint(), 0));
+        }
+
+        function findTappedSegment(tx, ty, segments) {
+            function dotProduct(p0, p1, p2) {
+                return (p1.x - p0.x) * (p2.x - p0.x) + (p1.y - p0.y) * (p2.y - p0.y);
+            }
+
+            function crossProduct(p0, p1, p2) {
+                return (p1.x - p0.x) * (p2.y - p0.y) - (p1.y - p0.y) * (p2.x - p0.x);
+            }
+
+            function distanceToPoint(p1, p2) {
+                if(feq(p1.x, p2.x) && feq(p1.y, p2.y)) {
+                    return 0;
+                }
+                return Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
+            }
+
+            function distanceToSegment(p, seg) {
+                var p1 = {x: seg.x1, y: seg.y1}, p2 = {x: seg.x2, y: seg.y2};
+                var dis = Math.min(distanceToPoint(p, p1), distanceToPoint(p, p2));
+                if(dotProduct(p1, p2, p) > 0 && dotProduct(p2, p1, p) > 0) {
+                    dis = Math.min(dis, Math.abs(crossProduct(p1, p2, p)) / distanceToPoint(p1, p2));
+                }
+                return dis;
+            }
+
+            console.log("tap: " + tx + " " + ty)
+            var threshold = 1 / scale;
+            var sid = -1, dis = threshold;
+            var p = {x: tx, y: ty};
+            for(var i = 0; i < segments.length; i ++) {
+                var d = distanceToSegment(p, segments[i]);
+                if(d < dis) {
+                    dis = d, sid = i;
+                }
+            }
+            return sid;
+        }
+
+        function highlightSegment(sid) {
+            console.log("highlight: " + sid);
+            setColor("#f8b551");
+            setLineWidth(5);
+            can.beginPath()
+            can.moveTo(segments[sid].x1, segments[sid].y1);
+            can.lineTo(segments[sid].x2, segments[sid].y2);
+            can.stroke();
+            setColor("#000");
+            setLineWidth(1);
         }
 	</script>
 
