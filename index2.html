@@ -2,84 +2,84 @@
 <html lang="zh">
 
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-	<link href="mui.css" rel="stylesheet" />
-	<title>KKL</title>
-	<style>
-		body {
-			margin: 0;
-			overflow: hidden;
-		}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link href="mui.css" rel="stylesheet" />
+    <title>KKL</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
 
-		canvas {
-			position: absolute;
-			bottom: 0;
-			left: 0;
-		}
+        canvas {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+        }
 
-		.toolbar {
-			position: absolute;
-			top: 0;
-			left: 0;
-			height: 80px;
-			width: 100%;
-			background-color: #ccc;
-			z-index: 20;
-		}
+        .toolbar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 80px;
+            width: 100%;
+            background-color: #ccc;
+            z-index: 20;
+        }
 
-		.tool {
-			display: inline-block;
-			height: 50px;
-			width: 50px;
-			margin-left: 20px;
-		}
+        .tool {
+            display: inline-block;
+            height: 50px;
+            width: 50px;
+            margin-left: 20px;
+        }
 
-		.block {
-			position: absolute;
-			top: 0;
-			right: -500px;
-			z-index: 999;
-		}
+        .block {
+            position: absolute;
+            top: 0;
+            right: -500px;
+            z-index: 999;
+        }
 
-		#scale {
-			position: absolute;
-			bottom: 20px;
-			right: 20px;
-			height: 10px;
-			width: 100px;
-			border-style: solid;
-			border-color: #000;
-			border-width: 0 1px 1px;
-			text-align: center;
-			line-height: 40px;
-			font-size: 12px;
-		}
-	</style>
+        #scale {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            height: 10px;
+            width: 100px;
+            border-style: solid;
+            border-color: #000;
+            border-width: 0 1px 1px;
+            text-align: center;
+            line-height: 40px;
+            font-size: 12px;
+        }
+    </style>
 
 </head>
 
 <body>
-	<div class="toolbar"></div>
-	<canvas id="canvas"></canvas>
-	<div id="scale"></div>
-	<script type="text/javascript" src="mui.js"></script>
-	<script>
+    <div class="toolbar"></div>
+    <canvas id="canvas"></canvas>
+    <div id="scale"></div>
+    <script type="text/javascript" src="mui.js"></script>
+    <script>
         "use strict";
-		// ----------common-----------
-		mui.init();
-		var SCREEN = {};
-		SCREEN.width = 1024;
-		SCREEN.height = 768;
-		SCREEN.topbar = 20;
-		var TOOLBAR = {};
-		TOOLBAR.width = SCREEN.width;
-		TOOLBAR.height = 80;
+        // ----------common-----------
+        mui.init();
+        var SCREEN = {};
+        SCREEN.width = 1024;
+        SCREEN.height = 768;
+        SCREEN.topbar = 20;
+        var TOOLBAR = {};
+        TOOLBAR.width = SCREEN.width;
+        TOOLBAR.height = 80;
         var gauge_data = JSON.parse(localStorage.getItem("gauge_data"))
-		var INIT = gauge_data.INIT;
-		var OUT = gauge_data.OUT;
-		var IN = gauge_data.IN;
-		var scale = gauge_data.scale;
+        var INIT = gauge_data.INIT;
+        var OUT = gauge_data.OUT;
+        var IN = gauge_data.IN;
+        var scale = gauge_data.scale;
 
         var eps = 0.001 / scale;
         function feq(x, y) {
@@ -92,42 +92,42 @@
             return x - y > eps;
         }
 
-		// --------Init objects----------
-		var toolbar = document.getElementsByClassName("toolbar")[0];
-		toolbar.style.height = TOOLBAR.height + SCREEN.topbar + 'px';
-		toolbar.style.paddingTop = SCREEN.topbar + 'px';
-		var canvas = document.getElementById("canvas");
-		canvas.height = SCREEN.height - SCREEN.topbar - TOOLBAR.height;
-		canvas.width = SCREEN.width;
-		var can = canvas.getContext('2d');
+        // --------Init objects----------
+        var toolbar = document.getElementsByClassName("toolbar")[0];
+        toolbar.style.height = TOOLBAR.height + SCREEN.topbar + 'px';
+        toolbar.style.paddingTop = SCREEN.topbar + 'px';
+        var canvas = document.getElementById("canvas");
+        canvas.height = SCREEN.height - SCREEN.topbar - TOOLBAR.height;
+        canvas.width = SCREEN.width;
+        var can = canvas.getContext('2d');
         // --------Init End-------------
 
-		// --------Init TOOLBAR----------
-		var tools = [{
-			"id": "add-components",
-			"default": {
-				"height": 50,
-				"width": 50,
-			},
-			"icon": "./11.png"
-		}, {
+        // --------Init TOOLBAR----------
+        var tools = [{
+            "id": "add-components",
+            "default": {
+                "height": 50,
+                "width": 50,
+            },
+            "icon": "./11.png"
+        }, {
             "id": "anti-clockwise",
-			"default": {
-				"height": 50,
-				"width": 50,
-			},
-			"icon": "./img/anti-clockwise.png"
-		}, {
-			"id": "clockwise",
-			"default": {
-				"height": 50,
-				"width": 50
-			},
-			"icon": "./img/clockwise.png"
-		}];
-		initToolBar(tools);
+            "default": {
+                "height": 50,
+                "width": 50,
+            },
+            "icon": "./img/anti-clockwise.png"
+        }, {
+            "id": "clockwise",
+            "default": {
+                "height": 50,
+                "width": 50
+            },
+            "icon": "./img/clockwise.png"
+        }];
+        initToolBar(tools);
 
-		//---------Init End------------
+        //---------Init End------------
 
         document.getElementById("scale").innerText = (scale * 100).toFixed(2) + '米';
         var segments = reshapeBlocks(INIT, IN, OUT, scale);
@@ -144,21 +144,21 @@
         });
 
 
-		//-------Functions------------
+        //-------Functions------------
 
-		/**
-		 * InitToolBar 初始化工具栏,根据tools数组的内容创建工具图标并添加拖动事件
-		 * @param {Array} tools 要初始化的工具列表
-		 */
-		function initToolBar(tools) {
-			for (var i = 0; i < tools.length; i++) {
-				var tool = document.createElement("span");
+        /**
+         * InitToolBar 初始化工具栏,根据tools数组的内容创建工具图标并添加拖动事件
+         * @param {Array} tools 要初始化的工具列表
+         */
+        function initToolBar(tools) {
+            for (var i = 0; i < tools.length; i++) {
+                var tool = document.createElement("span");
                 tool.id = tools[i].id;
-				tool.className = "tool";
-				tool.setAttribute("name", tools[i].name);
-				tool.innerHTML = '<img src="' + tools[i].icon + '" style="with:' + tools[i].default.width + 'px; height:' + tools[i].default.height + 'px"/>';
-				toolbar.appendChild(tool);
-			}
+                tool.className = "tool";
+                tool.setAttribute("name", tools[i].name);
+                tool.innerHTML = '<img src="' + tools[i].icon + '" style="with:' + tools[i].default.width + 'px; height:' + tools[i].default.height + 'px"/>';
+                toolbar.appendChild(tool);
+            }
             document.getElementById("add-components").addEventListener("tap", function(e) {
                 alert("下面没有了");
             });
@@ -176,13 +176,13 @@
                 }
                 redraw();
             });
-		}
+        }
 
-		/**
-		 * 重绘画布
-		 */
-		function redraw() {
-			clearCanvas();
+        /**
+         * 重绘画布
+         */
+        function redraw() {
+            clearCanvas();
             can.beginPath();
             for(var i = 0; i < segments.length; i ++) {
                 can.moveTo(segments[i].x1, segments[i].y1);
@@ -192,31 +192,31 @@
             if(segmentId >= 0) {
                 highlightSegment(segmentId);
             }
-		}
+        }
 
-		/**
-		 * 设置canvas画笔颜色
-		 * @param {String} color
-		 */
-		function setColor(color) {
-			can.strokeStyle = color;
-			can.fillStyle = color;
-		}
+        /**
+         * 设置canvas画笔颜色
+         * @param {String} color
+         */
+        function setColor(color) {
+            can.strokeStyle = color;
+            can.fillStyle = color;
+        }
 
-		/**
-		 * 设置canvas画笔粗细
-		 * @param {Number} width
-		 */
-		function setLineWidth(width) {
-			can.lineWidth = width;
-		}
+        /**
+         * 设置canvas画笔粗细
+         * @param {Number} width
+         */
+        function setLineWidth(width) {
+            can.lineWidth = width;
+        }
 
-		/**
-		 * 清空画布
-		 */
-		function clearCanvas() {
-			can.clearRect(0, 0, SCREEN.width, SCREEN.height - TOOLBAR.height - SCREEN.topbar);
-		}
+        /**
+         * 清空画布
+         */
+        function clearCanvas() {
+            can.clearRect(0, 0, SCREEN.width, SCREEN.height - TOOLBAR.height - SCREEN.topbar);
+        }
 
 
         /**
@@ -530,7 +530,7 @@
             setColor("#000");
             setLineWidth(1);
         }
-	</script>
+    </script>
 
 </body>
 
