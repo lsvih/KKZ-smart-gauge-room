@@ -35,13 +35,6 @@
             margin-left: 20px;
         }
 
-        .block {
-            position: absolute;
-            top: 0;
-            right: -500px;
-            z-index: 999;
-        }
-
         #scale {
             position: absolute;
             bottom: 20px;
@@ -80,6 +73,7 @@
         var OUT = gauge_data.OUT;
         var IN = gauge_data.IN;
         var scale = gauge_data.scale;
+        document.getElementById("scale").innerText = (scale * 100).toFixed(2) + '米';
 
         var eps = 0.001 / scale;
         function feq(x, y) {
@@ -129,8 +123,16 @@
 
         //---------Init End------------
 
-        document.getElementById("scale").innerText = (scale * 100).toFixed(2) + '米';
-        var segments = reshapeBlocks(INIT, IN, OUT, scale);
+        if(!("segments" in gauge_data)) {
+            gauge_data.segments = reshapeBlocks(INIT, IN, OUT, scale);
+        }
+        if(!("components" in gauge_data)) {
+            gauge_data.components = [];
+            for(var i = 0; i < gauge_data.segments.length; i ++) {
+                gauge_data.components.push([]);
+            }
+        }
+        var segments = gauge_data.segments;
         var segmentId = -1;
         console.log("segments:");
         console.log(segments);
@@ -142,7 +144,6 @@
             segmentId = findTappedSegment(x, y, segments);
             redraw();
         });
-
 
         //-------Functions------------
 
@@ -160,7 +161,13 @@
                 toolbar.appendChild(tool);
             }
             document.getElementById("add-components").addEventListener("tap", function(e) {
-                alert("下面没有了");
+                if(segmentId < 0) {
+                    alert("大哥，先选条边吧");
+                } else {
+                    localStorage.setItem("selectedSegmentId", String(segmentId));
+                    localStorage.setItem("gauge_data",JSON.stringify(gauge_data));
+                    location.href = "index3.html";
+                }
             });
             document.getElementById("anti-clockwise").addEventListener("tap", function(e) {
                 segmentId -= 1;
@@ -316,7 +323,6 @@
                     var res = [];
                     var sid = points.id(sp);
                     res.push(points.p[sid]);
-                    // can.moveTo(res[0].x, res[0].y);
                     var pd = sd; // 上一次的方向
                     var cid = sid; // 当前节点id
                     var vis = Array(points.p.length);
@@ -332,8 +338,6 @@
                         throw Error("Cannot choose one way.");
                     }
                     do {
-                        // console.log("cid");
-                        // console.log(cid);
                         var edges = this.next[cid];
                         edges = edges.filter(function(a) {
                             // 过滤掉反向边
@@ -347,13 +351,7 @@
                             d[edges[i].d] = edges[i];
                         }
                         var p = points.p[cid];
-                        // can.lineTo(p.x, p.y);
-                        // can.stroke();
                         var di;
-                        // console.log("p: ");
-                        // console.log(p);
-                        // console.log("d: ");
-                        // console.log(d);
                         if(isOnSegment(p, {x: initBlock.x1, y: initBlock.y1}, {x: initBlock.x2, y: initBlock.y1})) {
                             if(points.eq(p, {x: initBlock.x1, y: initBlock.y1}) && (pd == 1 || pd == 3)) {
                                 di = choose(d, [2, 0, 3]);
