@@ -55,10 +55,17 @@
             text-align: left;
         }
 
-        tr th:first-child, tr td:first-child, tr th:nth-child(2), tr td:nth-child(2), tr th:nth-child(3), tr td:nth-child(3) {
+        tr th:first-child,
+        tr td:first-child,
+        tr th:nth-child(2),
+        tr td:nth-child(2),
+        tr th:nth-child(3),
+        tr td:nth-child(3) {
             width: 30%;
         }
-        tr th:last-child, tr td:last-child {
+
+        tr th:last-child,
+        tr td:last-child {
             width: 10%;
         }
 
@@ -76,7 +83,8 @@
             width: 100%;
         }
 
-        .left-input, .bottom-input {
+        .left-input,
+        .bottom-input {
             margin-bottom: 0px!important;
         }
 
@@ -97,6 +105,9 @@
         </div>
         <div class="tool right">
             <button id="add-btn" type="button" class="mui-btn mui-btn-primary mui-btn-outlined">添加</button>
+        </div>
+        <div class="tool right">
+            <button id="preview-btn" type="button" class="mui-btn mui-btn-primary mui-btn-outlined">预览</button>
         </div>
     </div>
     <div id="scroll" class="mui-scroll-wrapper">
@@ -134,11 +145,16 @@
         var segmentId = parseInt(localStorage.getItem("selectedSegmentId"));
         var gauge_data = JSON.parse(localStorage.getItem("gauge_data"));
         console.log("selected segment id: " + segmentId);
-        var componentData = [
-            {value: 1, text: "component type 1"},
-            {value: 2, text: "component type 2"},
-            {value: 3, text: "component type 3"},
-        ];
+        var componentData = [{
+            value: 1,
+            text: "component type 1"
+        }, {
+            value: 2,
+            text: "component type 2"
+        }, {
+            value: 3,
+            text: "component type 3"
+        }, ];
 
         // --------Init objects----------
         var toolbar = document.getElementsByClassName("toolbar")[0];
@@ -152,7 +168,7 @@
             startX: 0,
             startY: 0,
             indicators: true,
-            deceleration:0.0006,
+            deceleration: 0.0006,
             bounce: true,
         });
         var picker = new mui.PopPicker();
@@ -163,7 +179,7 @@
             history.go(-1);
         });
         mui(".toolbar").on("tap", "#save-btn", function(e) {
-            if(saveComonents()) {
+            if (saveComonents()) {
                 history.go(-1);
             } else {
                 alert("大哥，您填的有点问题");
@@ -171,6 +187,9 @@
         });
         mui(".toolbar").on("tap", "#add-btn", function(e) {
             addComponent();
+        });
+        mui(".toolbar").on("tap", "#preview-btn", function(e) {
+            preview();
         });
         mui("#components").on("tap", ".pick-btn", function(e) {
             var id = parseInt(this.getAttribute("data-id"));
@@ -199,12 +218,20 @@
         //-------Functions------------
         function getComponentlist(components) {
             var list = [];
-            if(components.length == 0) {
-                list.push({left: "", bottom: ""});
+            if (components.length == 0) {
+                list.push({
+                    left: "",
+                    bottom: ""
+                });
             } else {
-                for(var i = 0; i < components.length; i ++) {
+                for (var i = 0; i < components.length; i++) {
                     var com = components[i];
-                    list.push({value: com.value, text: com.text, left: String(com.left), bottom: String(com.bottom)});
+                    list.push({
+                        value: com.value,
+                        text: com.text,
+                        left: String(com.left),
+                        bottom: String(com.bottom)
+                    });
                 }
             }
             return list;
@@ -212,7 +239,7 @@
 
         function fillComponents() {
             var html = ""
-            for(var i = 0; i < componentList.length; i ++) {
+            for (var i = 0; i < componentList.length; i++) {
                 html += getComponent(i);
             }
             document.getElementById("components").innerHTML = html;
@@ -220,7 +247,7 @@
 
         function getComponent(id) {
             var text = typeof componentList[id].value === "undefined" ? "选择component" : componentList[id].text;
-            var tdType = '<td><button class="pick-btn" data-id="' + id + '" type="button" class="mui-btn" />'+ text + '</td>';
+            var tdType = '<td><button class="pick-btn" data-id="' + id + '" type="button" class="mui-btn" />' + text + '</td>';
             var tdLeft = '<td><input class="left-input" data-id="' + id + '" type="text" value="' + componentList[id].left + '" /></td>';
             var tdBottom = '<td><input class="bottom-input" data-id="' + id + '" type="text" value="' + componentList[id].bottom + '" /></td>';
             var tdOption = '<td><button data-id="' + id + '" type="button" class="mui-btn mui-btn-danger mui-btn-outlined delete-btn">删除</button></td>';
@@ -228,29 +255,81 @@
         }
 
         function addComponent() {
-            componentList.push({left: "", bottom: ""});
+            componentList.push({
+                left: "",
+                bottom: ""
+            });
             fillComponents();
         }
 
         function saveComonents() {
             var com = [];
-            for(var i = 0; i < componentList.length; i ++) {
-                var v = componentList[i].value, t = componentList[i].text, l = componentList[i].left, b = componentList[i].bottom;
-                if(typeof v === "undefined" && l === "" && b === "") {
+            for (var i = 0; i < componentList.length; i++) {
+                var v = componentList[i].value,
+                    t = componentList[i].text,
+                    l = componentList[i].left,
+                    b = componentList[i].bottom;
+                if (typeof v === "undefined" && l === "" && b === "") {
                     continue;
                 }
-                if(typeof v === "undefined" || l === "" || b === "") {
+                if (typeof v === "undefined" || l === "" || b === "") {
                     return false;
                 }
                 try {
-                    com.push({value: v, text: t, left: parseFloat(l), bottom: parseFloat(b)});
-                } catch(e) {
+                    com.push({
+                        value: v,
+                        text: t,
+                        left: parseFloat(l),
+                        bottom: parseFloat(b)
+                    });
+                } catch (e) {
                     return false;
                 }
             }
             gauge_data.components[segmentId] = com;
             localStorage.setItem("gauge_data", JSON.stringify(gauge_data));
             return true;
+        }
+
+        function preview() {
+            // mui.openWindow({
+            //
+            // })
+            //切换至app时不再使用window.open
+            var components = getComponents();
+            if (components) {
+                window.open("index4.html?components=" + JSON.stringify(getComponents()))
+            }else{
+              mui.alert("请正确填写信息")
+            }
+
+        }
+
+        function getComponents() {
+            var com = [];
+            for (var i = 0; i < componentList.length; i++) {
+                var v = componentList[i].value,
+                    t = componentList[i].text,
+                    l = componentList[i].left,
+                    b = componentList[i].bottom;
+                if (typeof v === "undefined" && l === "" && b === "") {
+                    continue;
+                }
+                if (typeof v === "undefined" || l === "" || b === "") {
+                    return false;
+                }
+                try {
+                    com.push({
+                        value: v,
+                        text: t,
+                        left: parseFloat(l),
+                        bottom: parseFloat(b)
+                    });
+                } catch (e) {
+                    return false;
+                }
+            }
+            return com;
         }
     </script>
 
