@@ -94,12 +94,13 @@
 			background-color: #ff0000;
 			float: right;
 		}
-		.next-step{
+
+		.next-step {
 			position: absolute;
-			right:0;
+			right: 0;
 			height: 60px;
 			line-height: 60px;
-			width:150px;
+			width: 150px;
 			background-color: green;
 			text-align: center;
 			color: #fff;
@@ -109,7 +110,9 @@
 </head>
 
 <body>
-	<div class="toolbar"><div class="next-step">下一步啊</div></div>
+	<div class="toolbar">
+		<div class="next-step">下一步啊</div>
+	</div>
 	<canvas id="canvas"></canvas>
 	<div id="scale"></div>
 	<div id="area-set" data-id="">
@@ -209,8 +212,8 @@
 		/**
 		 * inputInitArea 输入初始区域大小，存入INIT对象中
 		 */
+		var numReg = /[1-9]\d*.\d*|0.\d*[1-9]\d*|[1-9]\d*/;
 		function inputInitArea() {
-			var numReg = /[1-9]\d*.\d*|0.\d*[1-9]\d*|[1-9]\d*/;
 			mui.prompt("请输入房屋的宽度", "单位:米", "KKL", ["取消", "确认"], function(e) {
 				var d = e.value;
 				if (numReg.test(d) && d > 0) {
@@ -219,25 +222,16 @@
 						var s = e.value;
 						if (numReg.test(s) && s > 0) {
 							INIT.w = Number(s);
-							mui.prompt("请输入房屋的高度", "单位:米", "KKL", ["取消", "确认"], function(e) {
-								var z = e.value;
-								if (numReg.test(s) && s > 0) {
-									INIT.z = Number(z);
-									calcInitArea();
-									can.strokeRect(INIT.x1, INIT.y1, INIT.x2 - INIT.x1, INIT.y2 - INIT.y1);
-								} else {
-									mui.toast("您的输入有误，请确认后重试");
-									location..reload();
-								}
-							})
+							calcInitArea();
+							can.strokeRect(INIT.x1, INIT.y1, INIT.x2 - INIT.x1, INIT.y2 - INIT.y1);
 						} else {
 							mui.toast("您的输入有误，请确认后重试");
-							location..reload();
+							location.reload();
 						}
-					})
+					});
 				} else {
 					mui.toast("您的输入有误，请确认后重试");
-					location..reload();
+					location.reload();
 				}
 			});
 		}
@@ -1078,14 +1072,29 @@
 		}
 
 
-		mui(".toolbar").on("tap",".next-step",function(){
-			var data = {"IN":IN,"OUT":OUT,"INIT":INIT,"scale":scale};
-			localStorage.setItem("gauge_data",JSON.stringify(data));
-			location.href = "index2.html";
+		mui(".toolbar").on("tap", ".next-step", function() {
+			mui.prompt("请输入房屋的高度", "单位:米", "KKL", ["取消", "确认"], function(e) {
+				var z = e.value;
+				if (numReg.test(z) && z > 0) {
+					INIT.z = Number(z);
+					var data = {
+						"IN": IN,
+						"OUT": OUT,
+						"INIT": INIT,
+						"scale": scale
+					};
+					localStorage.setItem("gauge_data", JSON.stringify(data));
+					location.href = "index2.html";
+				} else {
+					mui.toast("您的输入有误，请确认后重试");
+					location.reload();
+				}
+			});
+
+
+
+
 		})
-
-
-
 	</script>
 
 </body>
