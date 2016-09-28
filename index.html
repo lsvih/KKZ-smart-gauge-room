@@ -211,24 +211,33 @@
 		 */
 		function inputInitArea() {
 			var numReg = /[1-9]\d*.\d*|0.\d*[1-9]\d*|[1-9]\d*/;
-			mui.prompt("请输入房屋的长度", "单位:米", "KKL", ["取消", "确认"], function(e) {
+			mui.prompt("请输入房屋的宽度", "单位:米", "KKL", ["取消", "确认"], function(e) {
 				var d = e.value;
 				if (numReg.test(d) && d > 0) {
 					INIT.d = Number(d);
-					mui.prompt("请输入房屋的宽度", "单位:米", "KKL", ["取消", "确认"], function(e) {
+					mui.prompt("请输入房屋的长度", "单位:米", "KKL", ["取消", "确认"], function(e) {
 						var s = e.value;
 						if (numReg.test(s) && s > 0) {
 							INIT.w = Number(s);
-							calcInitArea();
-							can.strokeRect(INIT.x1, INIT.y1, INIT.x2 - INIT.x1, INIT.y2 - INIT.y1);
+							mui.prompt("请输入房屋的高度", "单位:米", "KKL", ["取消", "确认"], function(e) {
+								var z = e.value;
+								if (numReg.test(s) && s > 0) {
+									INIT.z = Number(z);
+									calcInitArea();
+									can.strokeRect(INIT.x1, INIT.y1, INIT.x2 - INIT.x1, INIT.y2 - INIT.y1);
+								} else {
+									mui.toast("您的输入有误，请确认后重试");
+									location..reload();
+								}
+							})
 						} else {
 							mui.toast("您的输入有误，请确认后重试");
-							//退出
+							location..reload();
 						}
 					})
 				} else {
 					mui.toast("您的输入有误，请确认后重试");
-					//退出
+					location..reload();
 				}
 			});
 		}
