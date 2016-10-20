@@ -5,7 +5,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	<link href="mui.css" rel="stylesheet" />
-	<title>KKL</title>
+	<title>智图</title>
 	<style>
 		body {
 			margin: 0;
@@ -33,6 +33,10 @@
 			height: 50px;
 			width: 50px;
 			margin-left: 20px;
+		}
+		.tool img{
+			height: 100%;
+			width: 100%;
 		}
 
 		.block {
@@ -111,7 +115,7 @@
 
 <body>
 	<div class="toolbar">
-		<div class="next-step">下一步啊</div>
+		<div class="next-step">下一步</div>
 	</div>
 	<canvas id="canvas"></canvas>
 	<div id="scale"></div>
@@ -180,7 +184,7 @@
 				"color": "red",
 				"position": "out"
 			},
-			"icon": "./11.png"
+			"icon": "./img/out.png"
 		}, {
 			"name": "2",
 			"default": {
@@ -189,16 +193,7 @@
 				"color": "green",
 				"position": "in"
 			},
-			"icon": "./11.png"
-		}, {
-			"name": "3",
-			"default": {
-				"height": 50,
-				"width": 50,
-				"color": "blue",
-				"position": "out"
-			},
-			"icon": "./11.png"
+			"icon": "./img/in.png"
 		}];
 		initToolBar(tools);
 		//---------Init End------------

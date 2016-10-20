@@ -7,7 +7,7 @@
     <link href="mui.css" rel="stylesheet" />
     <link href="mui.picker.css" rel="stylesheet" />
     <link href="mui.poppicker.css" rel="stylesheet" />
-    <title>KKL</title>
+    <title>智图</title>
     <style>
         body {
             margin: 0;
@@ -27,7 +27,7 @@
         .tool {
             display: inline-block;
             height: 50px;
-            width: 50px;
+            width: 100px;
         }
 
         .toolbar .left {
@@ -98,17 +98,17 @@
 <body>
     <div class="toolbar">
         <div class="tool left">
-            <button id="save-btn" type="button" class="mui-btn mui-btn-primary mui-btn-outlined">保存</button>
+            <button id="save-btn" type="button" class="mui-btn mui-btn-primary mui-btn-outlined">保存这面墙</button>
         </div>
         <div class="tool left">
             <button id="cancle-btn" type="button" class="mui-btn mui-btn-danger mui-btn-outlined">取消</button>
         </div>
         <div class="tool right">
-            <button id="add-btn" type="button" class="mui-btn mui-btn-primary mui-btn-outlined">添加</button>
+            <button id="add-btn" type="button" class="mui-btn mui-btn-primary mui-btn-outlined">添加一个单元</button>
         </div>
-        <div class="tool right">
+        <!-- <div class="tool right">
             <button id="preview-btn" type="button" class="mui-btn mui-btn-primary mui-btn-outlined">预览</button>
-        </div>
+        </div> -->
     </div>
     <div id="scroll" class="mui-scroll-wrapper">
         <div class="mui-scroll">
@@ -147,14 +147,11 @@
         console.log("selected segment id: " + segmentId);
         var componentData = [{
             value: 1,
-            text: "component type 1"
+            text: "水口"
         }, {
             value: 2,
-            text: "component type 2"
-        }, {
-            value: 3,
-            text: "component type 3"
-        }, ];
+            text: "电口"
+        }];
 
         // --------Init objects----------
         var toolbar = document.getElementsByClassName("toolbar")[0];
@@ -246,7 +243,7 @@
         }
 
         function getComponent(id) {
-            var text = typeof componentList[id].value === "undefined" ? "选择component" : componentList[id].text;
+            var text = typeof componentList[id].value === "undefined" ? "选择单元类型" : componentList[id].text;
             var tdType = '<td><button class="pick-btn" data-id="' + id + '" type="button" class="mui-btn" />' + text + '</td>';
             var tdLeft = '<td><input class="left-input" data-id="' + id + '" type="text" value="' + componentList[id].left + '" /></td>';
             var tdBottom = '<td><input class="bottom-input" data-id="' + id + '" type="text" value="' + componentList[id].bottom + '" /></td>';
@@ -291,19 +288,6 @@
             return true;
         }
 
-        function preview() {
-            // mui.openWindow({
-            //
-            // })
-            //切换至app时不再使用window.open
-            var components = getComponents();
-            if (components) {
-                window.open("index4.html?components=" + JSON.stringify(getComponents()))
-            }else{
-              mui.alert("请正确填写信息")
-            }
-
-        }
 
         function getComponents() {
             var com = [];

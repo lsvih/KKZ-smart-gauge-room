@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link href="mui.css" rel="stylesheet" />
-    <title>KKL</title>
+    <title>智图</title>
     <style>
         body {
             margin: 0;
@@ -48,12 +48,23 @@
             line-height: 40px;
             font-size: 12px;
         }
+        .next-step {
+          position: absolute;
+          right: 0;
+          height: 60px;
+          line-height: 60px;
+          width: 150px;
+          background-color: green;
+          text-align: center;
+          color: #fff;
+        }
     </style>
 
 </head>
 
 <body>
-    <div class="toolbar"></div>
+    <div class="toolbar">
+    	<div class="next-step">保存这个空间</div></div>
     <canvas id="canvas"></canvas>
     <div id="scale"></div>
     <script type="text/javascript" src="mui.js"></script>
@@ -103,7 +114,7 @@
                 "height": 50,
                 "width": 50,
             },
-            "icon": "./11.png"
+            "icon": "./img/edit.png"
         }, {
             "id": "anti-clockwise",
             "default": {
@@ -162,7 +173,7 @@
             }
             document.getElementById("add-components").addEventListener("tap", function(e) {
                 if(segmentId < 0) {
-                    alert("大哥，先选条边吧");
+                    alert("请选择要编辑的立面");
                 } else {
                     localStorage.setItem("selectedSegmentId", String(segmentId));
                     localStorage.setItem("gauge_data",JSON.stringify(gauge_data));
